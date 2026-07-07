@@ -516,8 +516,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const sortedData = [...data].sort((a, b) => {
                 const nameA = a.name;
                 const nameB = b.name;
-                const isViceA = nameA.includes('\uD835\uDE51\uD835\uDE5E\uD835\uDE58\uD835\uDE5A') || (nameA.toLowerCase().includes('vice') && !nameA.toLowerCase().includes('rp') && !nameA.toLowerCase().includes('dev'));
-                const isViceB = nameB.includes('\uD835\uDE51\uD835\uDE5E\uD835\uDE58\uD835\uDE5A') || (nameB.toLowerCase().includes('vice') && !nameB.toLowerCase().includes('rp') && !nameB.toLowerCase().includes('dev'));
+                const isViceA = nameA === '\uD835\uDE51\uD835\uDE5E\uD835\uDE58\uD835\uDE5A' || nameA === '𝙑𝙞𝙘𝙚' || nameA.toLowerCase() === 'vice';
+                const isViceB = nameB === '\uD835\uDE51\uD835\uDE5E\uD835\uDE58\uD835\uDE5A' || nameB === '𝙑𝙞𝙘𝙚' || nameB.toLowerCase() === 'vice';
                 
                 if (isViceA) return -1;
                 if (isViceB) return 1;
@@ -547,24 +547,27 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentPeriod = '7'; // '7', '30', 'all'
     let searchQuery = '';
     let leaderboardCurrentPage = 1;
-    const leaderboardPageSize = 5;
+    const leaderboardPageSize = 10;
+    let currentSortMetric = 'listeningTime';
 
-    // Generate stats dynamically based on server members count to make it look realistic
+    // Use REAL data from guilds.js - plays and listenHours are actual usage stats
     function getProcessedLeaderboardData(period) {
         let rawData = [...(window.activeCommunities || [])];
-        
-        return rawData.map((item, idx) => {
-            // Seeded random factor based on name length to keep values consistent
-            const seed = item.name.length * 7.5;
-            const playsMultiplier = period === '7' ? 4 : (period === '30' ? 18 : 65);
-            const listenMultiplier = period === '7' ? 1.2 : (period === '30' ? 5.2 : 18.5);
-            
-            const plays = Math.floor(item.members * playsMultiplier + (seed % 100));
-            const listenHours = Math.floor(item.members * listenMultiplier + (seed % 40));
-            
+        const isTr = document.body.classList.contains('lang-tr');
+
+        // Period multiplier - shows proportional usage per time window
+        const periodMultiplier = period === '7' ? 1 : (period === '30' ? 4.3 : 13);
+
+        return rawData.map((item) => {
+            // Use real values from guilds.js, scaled by period
+            const basePlays = item.plays || 0;
+            const baseListenHours = item.listenHours || 0;
+
+            const plays = Math.round(basePlays * periodMultiplier);
+            const listenHours = Math.round(baseListenHours * periodMultiplier);
+
             // Format listen hours into days or hours
             let listeningTimeText = '';
-            const isTr = document.body.classList.contains('lang-tr');
             if (listenHours >= 24) {
                 const days = Math.floor(listenHours / 24);
                 listeningTimeText = isTr ? `${days} Gün` : `${days} Days`;
@@ -578,17 +581,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 listeningTimeText: listeningTimeText,
                 listenHours: listenHours
             };
+        
         }).sort((a, b) => {
             // Force user's main server "𝙑𝙞𝙘e" to be 1st place always
             const nameA = a.name;
             const nameB = b.name;
-            const isViceA = nameA.includes('\uD835\uDE51\uD835\uDE5E\uD835\uDE58\uD835\uDE5A') || (nameA.toLowerCase().includes('vice') && !nameA.toLowerCase().includes('rp') && !nameA.toLowerCase().includes('dev'));
-            const isViceB = nameB.includes('\uD835\uDE51\uD835\uDE5E\uD835\uDE58\uD835\uDE5A') || (nameB.toLowerCase().includes('vice') && !nameB.toLowerCase().includes('rp') && !nameB.toLowerCase().includes('dev'));
+            const isViceA = nameA === '\uD835\uDE51\uD835\uDE5E\uD835\uDE58\uD835\uDE5A' || nameA === '𝙑𝙞𝙘𝙚' || nameA.toLowerCase() === 'vice';
+            const isViceB = nameB === '\uD835\uDE51\uD835\uDE5E\uD835\uDE58\uD835\uDE5A' || nameB === '𝙑𝙞𝙘𝙚' || nameB.toLowerCase() === 'vice';
             
             if (isViceA) return -1;
             if (isViceB) return 1;
             
-            return b.members - a.members; // Sort by members count descending
+            if (currentSortMetric === 'plays') {
+                return b.plays - a.plays;
+            } else if (currentSortMetric === 'members') {
+                return b.members - a.members;
+            } else {
+                return b.listenHours - a.listenHours; // Sort by listening time / bot usage
+            }
         });
     }
 
@@ -622,17 +632,40 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 }
 
-                // Crown SVG
-                const crownSvg = `
-                    <svg viewBox="0 0 24 24" fill="currentColor" style="width: 12px; height: 12px; display: inline-block; vertical-align: middle;">
-                        <path d="M5 16h14a1 1 0 0 0 .997-.917l1-11a1 1 0 0 0-1.364-1.002l-4.5 2.25L12 3.586l-3.133 1.745-4.5-2.25a1 1 0 0 0-1.364 1.002l1 11A1 1 0 0 0 5 16z"/>
-                    </svg>
-                `;
+                // Dynamic SVG based on Rank to match Beatra exactly
+                let rankIconSvg = '';
+                if (rank === 1) {
+                    // Trophy Cup SVG (Outline matching user screenshot)
+                    rankIconSvg = `
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 12px; height: 12px; display: inline-block; vertical-align: middle;">
+                            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+                            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+                            <path d="M4 22h16" />
+                            <path d="M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34" />
+                            <path d="M12 2a7 7 0 0 0-7 7c0 2.65 1.5 4.5 3 5h8c1.5-.5 3-2.35 3-5a7 7 0 0 0-7-7z" />
+                        </svg>
+                    `;
+                } else if (rank === 2) {
+                    // Ribbon Medal (Outline style matching user screenshot)
+                    rankIconSvg = `
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 12px; height: 12px; display: inline-block; vertical-align: middle;">
+                            <circle cx="12" cy="8" r="6" />
+                            <path d="m15.47 14 1.53 7-5-3-5 3 1.53-7" />
+                        </svg>
+                    `;
+                } else {
+                    // Star Award Medal (Outline style matching user screenshot)
+                    rankIconSvg = `
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 12px; height: 12px; display: inline-block; vertical-align: middle;">
+                            <path d="M12 2L15 9H22L17 14L19 21L12 17L5 21L7 14L2 9H9L12 2Z" />
+                        </svg>
+                    `;
+                }
 
                 return `
                     <div class="podium-item rank-${rank}">
                         <div class="podium-badge">
-                            ${crownSvg}
+                            ${rankIconSvg}
                             <span>${rank}</span>
                         </div>
                         <div class="podium-avatar-wrapper">
@@ -640,7 +673,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                         <div class="podium-name" title="${item.name}">${item.name}</div>
                         <div class="podium-stats">
-                            <div class="podium-stat-val">${item.listeningTimeText}</div>
+                            ${(() => {
+                                if (currentSortMetric === 'plays') {
+                                    const playsText = item.plays >= 1000 ? `${(item.plays / 1000).toFixed(1)}K` : item.plays;
+                                    return `<div class="podium-stat-val">${playsText} ${isTr ? 'Çalma' : 'Plays'}</div>`;
+                                } else if (currentSortMetric === 'members') {
+                                    return `<div class="podium-stat-val">${item.members.toLocaleString(isTr ? 'tr-TR' : 'en-US')} ${isTr ? 'Üye' : 'Members'}</div>`;
+                                } else {
+                                    return `<div class="podium-stat-val">${item.listeningTimeText}</div>`;
+                                }
+                            })()}
                         </div>
                     </div>
                 `;
@@ -832,6 +874,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+    // Sort dropdown change listener
+    const sortSelect = document.getElementById('leaderboard-sort');
+    if (sortSelect) {
+        sortSelect.addEventListener('change', (e) => {
+            currentSortMetric = e.target.value;
+            leaderboardCurrentPage = 1; // Reset to page 1
+            renderLeaderboard();
+        });
+    }
 
     // Run initial loads depending on page
     if (isLeaderboardPage) {

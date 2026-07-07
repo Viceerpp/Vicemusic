@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vice - En İyi Sunucular</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/jpeg" href="vice_logo.jpg">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=3">
     <style>
         /* Specific layout & style overrides to look EXACTLY like Beatra's design */
         body {
@@ -236,18 +238,21 @@
         }
 
         .rank-1 .podium-badge {
-            border-color: #eab308;
-            color: #eab308;
+            border-color: #fbbf24;
+            color: #fbbf24;
+            box-shadow: 0 0 12px rgba(251, 191, 36, 0.6), 0 0 24px rgba(251, 191, 36, 0.25);
         }
 
         .rank-2 .podium-badge {
-            border-color: #94a3b8;
-            color: #94a3b8;
+            border-color: #e8a07a;
+            color: #e8a07a;
+            box-shadow: 0 0 10px rgba(232, 160, 122, 0.5), 0 0 22px rgba(232, 160, 122, 0.2);
         }
 
         .rank-3 .podium-badge {
-            border-color: #ca8a04;
-            color: #ca8a04;
+            border-color: #f97316;
+            color: #f97316;
+            box-shadow: 0 0 10px rgba(249, 115, 22, 0.5), 0 0 22px rgba(249, 115, 22, 0.2);
         }
 
         .podium-avatar-wrapper {
@@ -591,6 +596,8 @@
                             <input type="text" id="leaderboard-search" placeholder="Sunucularda ara..." class="leaderboard-search-input">
                         </div>
                         <select class="leaderboard-sort-dropdown" id="leaderboard-sort">
+                            <option value="listeningTime">Dinleme Süresi / Listening Time</option>
+                            <option value="plays">Çalma Sayısı / Plays</option>
                             <option value="members">Üye Sayısı / Member Count</option>
                         </select>
                     </div>
@@ -881,7 +888,7 @@
     })();
     </script>
     <!-- App JavaScript -->
-    <script src="guilds.js"></script>
-    <script src="app.js"></script>
+    <script src="guilds.js?v=3"></script>
+    <script src="app.js?v=3"></script>
 </body>
 </html>

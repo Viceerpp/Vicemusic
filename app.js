@@ -413,6 +413,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isRadioActive) {
                 isRadioActive = false;
                 radioPlayer.pause();
+                if (window.hlsPlayer) {
+                    window.hlsPlayer.destroy();
+                    window.hlsPlayer = null;
+                }
                 radioPlayer.src = '';
                 radioPlayer.load();
                 if (radioLiveIndicator) radioLiveIndicator.style.display = 'none';
@@ -481,13 +485,58 @@ document.addEventListener('DOMContentLoaded', () => {
                     playSvg.style.display = 'none';
                     pauseSvg.style.display = 'block';
                     
-                    // 5. Load and play radio stream
-                    radioPlayer.src = streamUrl;
+                    // 5. Load and play radio stream (with HLS.js support for .m3u8 playlists)
                     radioPlayer.volume = (volumeSlider ? volumeSlider.value : 80) / 100;
-                    radioPlayer.load();
-                    radioPlayer.play().catch(e => {
-                        console.error("Radio play failed:", e);
-                    });
+                    
+                    if (streamUrl.endsWith('.m3u8') || streamUrl.includes('playlist.m3u8') || streamUrl.includes('.m3u8')) {
+                        if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+                            if (window.hlsPlayer) {
+                                window.hlsPlayer.destroy();
+                            }
+                            window.hlsPlayer = new Hls({
+                                maxMaxBufferLength: 10,
+                                enableWorker: true,
+                                lowLatencyMode: true
+                            });
+                            window.hlsPlayer.loadSource(streamUrl);
+                            window.hlsPlayer.attachMedia(radioPlayer);
+                            window.hlsPlayer.on(Hls.Events.MANIFEST_PARSED, () => {
+                                radioPlayer.play().catch(e => console.error("HLS Play failed:", e));
+                            });
+                            window.hlsPlayer.on(Hls.Events.ERROR, function (event, data) {
+                                if (data.fatal) {
+                                    switch (data.type) {
+                                        case Hls.ErrorTypes.NETWORK_ERROR:
+                                            console.log("fatal network error encountered, try to recover");
+                                            window.hlsPlayer.startLoad();
+                                            break;
+                                        case Hls.ErrorTypes.MEDIA_ERROR:
+                                            console.log("fatal media error encountered, try to recover");
+                                            window.hlsPlayer.recoverMediaError();
+                                            break;
+                                        default:
+                                            resetRadioState();
+                                            break;
+                                    }
+                                }
+                            });
+                        } else if (radioPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+                            // Safari native HLS support
+                            radioPlayer.src = streamUrl;
+                            radioPlayer.play().catch(e => console.error("Native HLS Play failed:", e));
+                        } else {
+                            console.error("HLS streaming is not supported in this browser.");
+                        }
+                    } else {
+                        // Standard MP3 stream
+                        if (window.hlsPlayer) {
+                            window.hlsPlayer.destroy();
+                            window.hlsPlayer = null;
+                        }
+                        radioPlayer.src = streamUrl;
+                        radioPlayer.load();
+                        radioPlayer.play().catch(e => console.error("Radio play failed:", e));
+                    }
                     
                     radioSelectorCustom.classList.remove('open');
                 });

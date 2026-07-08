@@ -262,29 +262,31 @@
                                     </button>
                                 </div>
 
-                                <div class="radio-select-group" style="margin-top: 15px; width: 100%;">
-                                    <div class="custom-select" id="radio-selector-custom" style="position: relative; width: 100%;">
-                                        <div class="select-trigger" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-md); color: #ffffff; cursor: pointer; transition: all 0.3s ease; font-size: 0.9rem;">
+                                <div class="radio-select-group">
+                                    <div class="custom-select" id="radio-selector-custom">
+                                        <div class="select-trigger">
                                             <span class="active-option">
                                                 <span class="tr-text">📻 Bir Radyo İstasyonu Seçin</span>
                                                 <span class="en-text">📻 Select a Radio Station</span>
                                             </span>
-                                            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px; transition: transform 0.3s ease;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                                         </div>
-                                        <div class="select-options" style="display: none; position: absolute; left: 0; right: 0; top: calc(100% + 5px); background: #0a0a0c; border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius-md); z-index: 100; max-height: 250px; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: left;">
-                                            <!-- Türkçe Radyolar -->
-                                            <div class="select-group-title" style="padding: 8px 15px 4px; font-size: 0.8rem; font-weight: 700; color: #3b82f6; border-bottom: 1px solid rgba(255,255,255,0.05); text-transform: uppercase; letter-spacing: 0.5px;">Türkçe Radyolar</div>
-                                            <div class="radio-option" data-value="https://radio-trtfm.live.trt.com.tr/trtfm/trtfm.py/playlist.m3u8" data-name="TRT FM" data-artist="TRT" style="padding: 10px 20px; color: #cbd5e1; cursor: pointer; transition: all 0.2s ease; font-size: 0.9rem;">TRT FM (Genel/Pop)</div>
-                                            <div class="radio-option" data-value="https://radio-trtradyo3.live.trt.com.tr/trtradyo3/trtradyo3.py/playlist.m3u8" data-name="TRT Radyo 3" data-artist="TRT" style="padding: 10px 20px; color: #cbd5e1; cursor: pointer; transition: all 0.2s ease; font-size: 0.9rem;">TRT Radyo 3 (Klasik/Caz)</div>
-                                            <div class="radio-option" data-value="https://radio-trtname.live.trt.com.tr/trtname/trtname.py/playlist.m3u8" data-name="TRT Nağme" data-artist="TRT" style="padding: 10px 20px; color: #cbd5e1; cursor: pointer; transition: all 0.2s ease; font-size: 0.9rem;">TRT Nağme (Türk Sanat Müziği)</div>
-                                            <div class="radio-option" data-value="https://radio-trtturku.live.trt.com.tr/trtturku/trtturku.py/playlist.m3u8" data-name="TRT Türkü" data-artist="TRT" style="padding: 10px 20px; color: #cbd5e1; cursor: pointer; transition: all 0.2s ease; font-size: 0.9rem;">TRT Türkü (Halk Müziği)</div>
-                                            
-                                            <!-- Global Radyolar -->
-                                            <div class="select-group-title" style="padding: 12px 15px 4px; font-size: 0.8rem; font-weight: 700; color: #3b82f6; border-bottom: 1px solid rgba(255,255,255,0.05); text-transform: uppercase; letter-spacing: 0.5px; border-top: 1px solid rgba(255,255,255,0.05);">Global Radios</div>
-                                            <div class="radio-option" data-value="https://stream.radioparadise.com/mp3-128" data-name="Radio Paradise" data-artist="Mellow Mix - USA" style="padding: 10px 20px; color: #cbd5e1; cursor: pointer; transition: all 0.2s ease; font-size: 0.9rem;">Radio Paradise (Alternative)</div>
-                                            <div class="radio-option" data-value="https://ice1.somafm.com/groovesalad-128-mp3" data-name="SomaFM Groove Salad" data-artist="Ambient - USA" style="padding: 10px 20px; color: #cbd5e1; cursor: pointer; transition: all 0.2s ease; font-size: 0.9rem;">SomaFM Groove Salad (Ambient)</div>
-                                            <div class="radio-option" data-value="https://ice1.somafm.com/defcon-128-mp3" data-name="SomaFM DEF CON" data-artist="Hacker Beats - USA" style="padding: 10px 20px; color: #cbd5e1; cursor: pointer; transition: all 0.2s ease; font-size: 0.9rem;">SomaFM DEF CON Radio (Electronic)</div>
-                                            <div class="radio-option" data-value="https://ice1.somafm.com/lush-128-mp3" data-name="SomaFM Lush" data-artist="Sensuous Chill - USA" style="padding: 10px 20px; color: #cbd5e1; cursor: pointer; transition: all 0.2s ease; font-size: 0.9rem;">SomaFM Lush (Vocal Chillout)</div>
+                                        <div class="select-options">
+                                            <!-- Türkçe Radyolar (5 adet - Fenomen Icecast HTTPS) -->
+                                            <div class="select-group-title">Türkçe Radyolar</div>
+                                            <div class="radio-option" data-value="https://listen.radyofenomen.com/fenomen/128/icecast.audio" data-name="Radyo Fenomen" data-artist="Pop / Hit - TR">Radyo Fenomen (Pop / Hit)</div>
+                                            <div class="radio-option" data-value="https://listen.radyofenomen.com/fenomenturk/128/icecast.audio" data-name="Fenomen Türk" data-artist="Türkçe Pop - TR">Fenomen Türk (Türkçe Pop)</div>
+                                            <div class="radio-option" data-value="https://listen.radyofenomen.com/fenomenkarisik/128/icecast.audio" data-name="Fenomen Karışık" data-artist="Karışık - TR">Fenomen Karışık (Mix)</div>
+                                            <div class="radio-option" data-value="https://listen.radyofenomen.com/fenomendans/128/icecast.audio" data-name="Fenomen Dans" data-artist="Dance / Club - TR">Fenomen Dans (Club / Dance)</div>
+                                            <div class="radio-option" data-value="https://listen.radyofenomen.com/fenomenrap/128/icecast.audio" data-name="Fenomen Rap" data-artist="Rap / Hip-Hop - TR">Fenomen Rap (Hip-Hop)</div>
+
+                                            <!-- Global Radyolar (5 adet - SomaFM & Radio Paradise MP3) -->
+                                            <div class="select-group-title">Global Radios</div>
+                                            <div class="radio-option" data-value="https://stream.radioparadise.com/mp3-128" data-name="Radio Paradise" data-artist="Alternative - USA">Radio Paradise (Alternative)</div>
+                                            <div class="radio-option" data-value="https://ice1.somafm.com/groovesalad-128-mp3" data-name="SomaFM Groove Salad" data-artist="Ambient - USA">SomaFM Groove Salad (Ambient)</div>
+                                            <div class="radio-option" data-value="https://ice1.somafm.com/defcon-128-mp3" data-name="SomaFM DEF CON" data-artist="Electronic - USA">SomaFM DEF CON (Electronic)</div>
+                                            <div class="radio-option" data-value="https://ice1.somafm.com/lush-128-mp3" data-name="SomaFM Lush" data-artist="Chillout - USA">SomaFM Lush (Vocal Chillout)</div>
+                                            <div class="radio-option" data-value="https://ice1.somafm.com/spacestation-128-mp3" data-name="SomaFM Space Station" data-artist="Ambient Space - USA">SomaFM Space Station (Space)</div>
                                         </div>
                                     </div>
                                 </div>

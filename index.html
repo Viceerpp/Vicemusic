@@ -262,6 +262,36 @@
                                     </button>
                                 </div>
 
+                                <div class="radio-select-group" style="margin-top: 15px; width: 100%;">
+                                    <select id="radio-selector" style="width: 100%; padding: 10px 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-md); color: #ffffff; outline: none; cursor: pointer; font-family: var(--font-body); font-size: 0.9rem; transition: all 0.3s ease;">
+                                        <option value="" disabled selected class="tr-text">📻 Bir Radyo İstasyonu Seçin</option>
+                                        <option value="" disabled selected class="en-text">📻 Select a Radio Station</option>
+                                        
+                                        <!-- Türkçe Radyolar -->
+                                        <optgroup label="Türkçe Radyolar / Turkish Radios">
+                                            <option value="http://radyo.kralfm.com.tr/stream/1/" data-name="Kral FM" data-artist="Kral Medya Grubu">Kral FM (Arabesk)</option>
+                                            <option value="https://live.powerturk.com/powerturk/mpeg/icecast.audio" data-name="PowerTürk" data-artist="Power Group">PowerTürk (Türkçe Pop)</option>
+                                            <option value="https://shoutcast.radyofenomen.com/fenomenturk/mpeg/icecast.audio" data-name="Fenomen Türk" data-artist="Fenomen Medya">Fenomen Türk (Pop)</option>
+                                            <option value="http://46.20.7.125:80/" data-name="Metro FM" data-artist="Karnaval">Metro FM (Yabancı Hit)</option>
+                                            <option value="http://46.20.3.201:80/" data-name="Süper FM" data-artist="Karnaval">Süper FM (Türkçe Pop)</option>
+                                        </optgroup>
+                                        
+                                        <!-- Global Radyolar -->
+                                        <optgroup label="Global Radyolar / Global Radios">
+                                            <option value="https://icecast.unitedradio.it/VirginRadio.mp3" data-name="Virgin Radio" data-artist="Rock - Italy">Virgin Radio (Rock)</option>
+                                            <option value="http://stream.radioparadise.com/mp3-128" data-name="Radio Paradise" data-artist="Mellow Mix - USA">Radio Paradise (Alternative)</option>
+                                            <option value="https://stream.ibizaglobalradio.com/public/ibizaglobalradio" data-name="Ibiza Global Radio" data-artist="Electronic - Spain">Ibiza Global Radio (Electronic)</option>
+                                            <option value="https://somafm.com/groovesalad130.mp3" data-name="SomaFM Groove Salad" data-artist="Ambient - USA">SomaFM Groove Salad (Ambient)</option>
+                                            <option value="http://streaming.softrockradio.live/stream" data-name="Soft Rock Radio" data-artist="Soft Rock - UK">Soft Rock Radio (Classic Hits)</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+
+                                <div class="radio-live-badge" id="radio-live-indicator" style="display: none; align-items: center; justify-content: center; gap: 8px; margin: 15px 0; color: #ef4444; font-weight: 700; font-size: 0.9rem;">
+                                    <span style="display: inline-block; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; box-shadow: 0 0 8px #ef4444; animation: pulse 1.5s infinite;"></span>
+                                    <span>CANLI / LIVE</span>
+                                </div>
+
                                 <div class="playback-timeline" id="custom-timeline">
                                     <span class="time-elapsed" id="time-current">01:45</span>
                                     <div class="timeline-bar" id="timeline-slider">
@@ -288,14 +318,14 @@
                                     <button class="ctrl-btn" id="btn-shuffle" aria-label="Karıştır">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
                                     </button>
-                                    <button class="ctrl-btn" id="btn-prev" aria-label="Önceki">
+                                    <button class="ctrl-btn" id="btn-prev" aria-label="Önceki" style="display: none;">
                                         <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="4" x2="5" y2="20" stroke="currentColor" stroke-width="2"></line></svg>
                                     </button>
                                     <button class="ctrl-btn ctrl-btn-main play-pause-btn" id="btn-play-pause" aria-label="Oynat / Durdur">
                                         <svg viewBox="0 0 24 24" fill="currentColor" class="play-svg" style="display:none;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                                         <svg viewBox="0 0 24 24" fill="currentColor" class="pause-svg"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
                                     </button>
-                                    <button class="ctrl-btn" id="btn-next" aria-label="Sonraki">
+                                    <button class="ctrl-btn" id="btn-next" aria-label="Sonraki" style="display: none;">
                                         <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="4" x2="19" y2="20" stroke="currentColor" stroke-width="2"></line></svg>
                                     </button>
                                     <button class="ctrl-btn" id="btn-repeat" aria-label="Tekrar Et">
@@ -683,7 +713,7 @@
                     <ul>
                         <li><a href="#faq"><span class="tr-text">SSS</span><span class="en-text">FAQ</span></a></li>
                         <li><a href="https://discord.gg/PB7BZUZFbg" target="_blank"><span class="tr-text">Destek Sunucusu</span><span class="en-text">Support Server</span></a></li>
-                        <li><a href="#"><span class="tr-text">Bize Ulaşın</span><span class="en-text">Contact Us</span></a></li>
+                        <li><a href="https://discord.gg/PB7BZUZFbg" target="_blank" rel="noopener noreferrer"><span class="tr-text">Bize Ulaşın</span><span class="en-text">Contact Us</span></a></li>
                     </ul>
                 </div>
                 <div class="footer-links-col">
@@ -697,7 +727,7 @@
             </div>
 
         <div class="footer-bottom">
-            <div class="container footer-bottom-content" style="flex-direction: column; gap: 8px; text-align: center;">
+            <div class="container footer-bottom-content" style="max-width: 95%; width: 95%; flex-direction: column; gap: 8px; text-align: center;">
                 <div style="display: flex; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 10px;">
                     <p>&copy; 2026 Vice Bot. 
                         <span class="tr-text">Tüm hakları saklıdır.</span>

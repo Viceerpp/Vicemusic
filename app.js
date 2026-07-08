@@ -87,10 +87,12 @@ document.addEventListener('DOMContentLoaded', () => {
         ];
 
         let currentTrackIndex = 0;
-        let isPlaying = true;
-        let trackCurrentSeconds = 105; // starts in middle of first track (01:45)
+        let isPlaying = false; // Starts paused initially
+        let trackCurrentSeconds = 0; // Starts at 0
         let playbackInterval = null;
         let isYoutubeActive = false;
+        let isRadioActive = false;
+        const radioPlayer = new Audio();
 
         const playerMockup = document.querySelector('.player-mockup');
         const trackTitle = document.getElementById('track-name');
@@ -117,6 +119,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const ytTimelineMsg = document.getElementById('yt-timeline-msg');
         const volumeSlider = document.getElementById('volume-slider');
         const volumePercentage = document.getElementById('volume-percentage');
+        const radioSelectorCustom = document.getElementById('radio-selector-custom');
+        const radioLiveIndicator = document.getElementById('radio-live-indicator');
 
         // Extract YouTube Video ID from URL
         function getYouTubeId(url) {
@@ -197,6 +201,19 @@ document.addEventListener('DOMContentLoaded', () => {
                         iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
                     }
                 }
+            } else if (isRadioActive) {
+                isPlaying = !isPlaying;
+                if (isPlaying) {
+                    playerMockup.classList.remove('paused');
+                    playSvg.style.display = 'none';
+                    pauseSvg.style.display = 'block';
+                    radioPlayer.play().catch(e => console.error(e));
+                } else {
+                    playerMockup.classList.add('paused');
+                    playSvg.style.display = 'block';
+                    pauseSvg.style.display = 'none';
+                    radioPlayer.pause();
+                }
             } else {
                 if (isPlaying) {
                     isPlaying = false;
@@ -223,6 +240,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 ytTimelineMsg.style.display = 'none';
                 customTimeline.style.display = 'flex';
             }
+            if (isRadioActive) {
+                resetRadioState();
+                customTimeline.style.display = 'flex';
+            }
             
             if (shuffleBtn.classList.contains('active')) {
                 currentTrackIndex = Math.floor(Math.random() * playlist.length);
@@ -247,6 +268,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 ytTimelineMsg.style.display = 'none';
                 customTimeline.style.display = 'flex';
             }
+            if (isRadioActive) {
+                resetRadioState();
+                customTimeline.style.display = 'flex';
+            }
             
             currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
             loadTrack(currentTrackIndex);
@@ -265,6 +290,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const videoId = getYouTubeId(url);
             if (videoId) {
+                // Stop radio if active
+                if (isRadioActive) {
+                    resetRadioState();
+                }
+
                 isPlaying = false;
                 stopTimer();
 
@@ -372,15 +402,110 @@ document.addEventListener('DOMContentLoaded', () => {
                             args: [volVal]
                         }), '*');
                     }
+                } else if (isRadioActive) {
+                    radioPlayer.volume = volVal / 100;
                 }
             });
         }
 
-        // Initialize mock first track state
+        // Reset Radio State Helper
+        function resetRadioState() {
+            if (isRadioActive) {
+                isRadioActive = false;
+                radioPlayer.pause();
+                radioPlayer.src = '';
+                if (radioLiveIndicator) radioLiveIndicator.style.display = 'none';
+                
+                // Reset custom dropdown label
+                const activeOptionSpan = radioSelectorCustom ? radioSelectorCustom.querySelector('.active-option') : null;
+                if (activeOptionSpan) {
+                    const isTr = document.body.classList.contains('lang-tr');
+                    activeOptionSpan.innerHTML = isTr 
+                        ? `<span class="tr-text">📻 Bir Radyo İstasyonu Seçin</span>`
+                        : `<span class="en-text">📻 Select a Radio Station</span>`;
+                }
+            }
+        }
+
+        // Radio Selector Custom Dropdown Listener
+        if (radioSelectorCustom) {
+            const trigger = radioSelectorCustom.querySelector('.select-trigger');
+            const options = radioSelectorCustom.querySelectorAll('.radio-option');
+            const activeOptionSpan = radioSelectorCustom.querySelector('.active-option');
+            
+            trigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                radioSelectorCustom.classList.toggle('open');
+            });
+            
+            options.forEach(opt => {
+                opt.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const streamUrl = opt.getAttribute('data-value');
+                    const radioName = opt.getAttribute('data-name');
+                    const radioArtist = opt.getAttribute('data-artist');
+                    
+                    if (!streamUrl) return;
+                    
+                    // Update dropdown label text
+                    activeOptionSpan.innerHTML = `📻 ${radioName}`;
+                    
+                    // 1. Stop YouTube Player if active
+                    if (isYoutubeActive) {
+                        isYoutubeActive = false;
+                        ytVideoContainer.style.display = 'none';
+                        ytVideoContainer.innerHTML = '';
+                        albumArt.style.display = 'block';
+                        customTimeline.style.display = 'flex';
+                        ytTimelineMsg.style.display = 'none';
+                    }
+                    
+                    // 2. Stop Mock Player timeline timer if running
+                    stopTimer();
+                    
+                    // 3. Activate Radio state
+                    isRadioActive = true;
+                    isPlaying = true;
+                    
+                    // 4. Update UI labels
+                    trackTitle.textContent = radioName;
+                    trackArtist.textContent = radioArtist;
+                    
+                    // Hide normal timeline, show LIVE badge
+                    customTimeline.style.display = 'none';
+                    if (radioLiveIndicator) radioLiveIndicator.style.display = 'flex';
+                    
+                    // Update Play/Pause button icons
+                    playerMockup.classList.remove('paused');
+                    playSvg.style.display = 'none';
+                    pauseSvg.style.display = 'block';
+                    
+                    // 5. Load and play radio stream
+                    radioPlayer.src = streamUrl;
+                    radioPlayer.volume = (volumeSlider ? volumeSlider.value : 80) / 100;
+                    radioPlayer.play().catch(e => {
+                        console.error("Radio playback failed:", e);
+                    });
+                    
+                    radioSelectorCustom.classList.remove('open');
+                });
+            });
+            
+            document.addEventListener('click', () => {
+                radioSelectorCustom.classList.remove('open');
+            });
+        }
+
+        // Initialize mock first track state (paused on load)
+        isPlaying = false;
+        playerMockup.classList.add('paused');
+        playSvg.style.display = 'block';
+        pauseSvg.style.display = 'none';
+        
         loadTrack(currentTrackIndex);
-        trackCurrentSeconds = 105;
+        trackCurrentSeconds = 0;
         updateTimeline();
-        startTimer();
+        stopTimer();
     }
 
 

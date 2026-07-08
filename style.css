@@ -901,6 +901,25 @@ footer,
     transform: scale(1.3);
 }
 
+/* Custom Radio Selector Dropdown Styles */
+#radio-selector-custom .select-trigger:hover {
+    border-color: rgba(37, 99, 235, 0.5);
+    background: rgba(255, 255, 255, 0.08) !important;
+}
+
+#radio-selector-custom.open .chevron {
+    transform: rotate(180deg);
+}
+
+#radio-selector-custom.open .select-options {
+    display: block !important;
+}
+
+#radio-selector-custom .radio-option:hover {
+    background: rgba(37, 99, 235, 0.15) !important;
+    color: #ffffff !important;
+}
+
 .player-controls {
     display: flex;
     align-items: center;
@@ -1349,8 +1368,9 @@ footer,
 }
 
 .disclaimer {
-    max-width: 50%;
+    max-width: 60%;
     text-align: right;
+    margin-left: auto;
 }
 
 /* ==========================================================================

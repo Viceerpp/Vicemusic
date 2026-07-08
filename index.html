@@ -263,28 +263,31 @@
                                 </div>
 
                                 <div class="radio-select-group" style="margin-top: 15px; width: 100%;">
-                                    <select id="radio-selector" style="width: 100%; padding: 10px 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-md); color: #ffffff; outline: none; cursor: pointer; font-family: var(--font-body); font-size: 0.9rem; transition: all 0.3s ease;">
-                                        <option value="" disabled selected class="tr-text">📻 Bir Radyo İstasyonu Seçin</option>
-                                        <option value="" disabled selected class="en-text">📻 Select a Radio Station</option>
-                                        
-                                        <!-- Türkçe Radyolar -->
-                                        <optgroup label="Türkçe Radyolar / Turkish Radios">
-                                            <option value="http://radyo.kralfm.com.tr/stream/1/" data-name="Kral FM" data-artist="Kral Medya Grubu">Kral FM (Arabesk)</option>
-                                            <option value="https://live.powerturk.com/powerturk/mpeg/icecast.audio" data-name="PowerTürk" data-artist="Power Group">PowerTürk (Türkçe Pop)</option>
-                                            <option value="https://shoutcast.radyofenomen.com/fenomenturk/mpeg/icecast.audio" data-name="Fenomen Türk" data-artist="Fenomen Medya">Fenomen Türk (Pop)</option>
-                                            <option value="http://46.20.7.125:80/" data-name="Metro FM" data-artist="Karnaval">Metro FM (Yabancı Hit)</option>
-                                            <option value="http://46.20.3.201:80/" data-name="Süper FM" data-artist="Karnaval">Süper FM (Türkçe Pop)</option>
-                                        </optgroup>
-                                        
-                                        <!-- Global Radyolar -->
-                                        <optgroup label="Global Radyolar / Global Radios">
-                                            <option value="https://icecast.unitedradio.it/VirginRadio.mp3" data-name="Virgin Radio" data-artist="Rock - Italy">Virgin Radio (Rock)</option>
-                                            <option value="http://stream.radioparadise.com/mp3-128" data-name="Radio Paradise" data-artist="Mellow Mix - USA">Radio Paradise (Alternative)</option>
-                                            <option value="https://stream.ibizaglobalradio.com/public/ibizaglobalradio" data-name="Ibiza Global Radio" data-artist="Electronic - Spain">Ibiza Global Radio (Electronic)</option>
-                                            <option value="https://somafm.com/groovesalad130.mp3" data-name="SomaFM Groove Salad" data-artist="Ambient - USA">SomaFM Groove Salad (Ambient)</option>
-                                            <option value="http://streaming.softrockradio.live/stream" data-name="Soft Rock Radio" data-artist="Soft Rock - UK">Soft Rock Radio (Classic Hits)</option>
-                                        </optgroup>
-                                    </select>
+                                    <div class="custom-select" id="radio-selector-custom" style="position: relative; width: 100%;">
+                                        <div class="select-trigger" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-md); color: #ffffff; cursor: pointer; transition: all 0.3s ease; font-size: 0.9rem;">
+                                            <span class="active-option">
+                                                <span class="tr-text">📻 Bir Radyo İstasyonu Seçin</span>
+                                                <span class="en-text">📻 Select a Radio Station</span>
+                                            </span>
+                                            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px; transition: transform 0.3s ease;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                        </div>
+                                        <div class="select-options" style="display: none; position: absolute; left: 0; right: 0; top: calc(100% + 5px); background: #0a0a0c; border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius-md); z-index: 100; max-height: 250px; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: left;">
+                                            <!-- Türkçe Radyolar -->
+                                            <div class="select-group-title" style="padding: 8px 15px 4px; font-size: 0.8rem; font-weight: 700; color: #3b82f6; border-bottom: 1px solid rgba(255,255,255,0.05); text-transform: uppercase; letter-spacing: 0.5px;">Türkçe Radyolar</div>
+                                            <div class="radio-option" data-value="https://live.powerturk.com/powerturk/mpeg/icecast.audio" data-name="PowerTürk" data-artist="Power Group" style="padding: 10px 20px; color: #cbd5e1; cursor: pointer; transition: all 0.2s ease; font-size: 0.9rem;">PowerTürk (Pop)</div>
+                                            <div class="radio-option" data-value="https://shoutcast.radyofenomen.com/fenomenturk/mpeg/icecast.audio" data-name="Fenomen Türk" data-artist="Fenomen Medya" style="padding: 10px 20px; color: #cbd5e1; cursor: pointer; transition: all 0.2s ease; font-size: 0.9rem;">Fenomen Türk (Pop)</div>
+                                            <div class="radio-option" data-value="https://turkmedya.radyotvonline.net/alemfmaudio" data-name="Alem FM" data-artist="TürkMedya" style="padding: 10px 20px; color: #cbd5e1; cursor: pointer; transition: all 0.2s ease; font-size: 0.9rem;">Alem FM (Hit Pop)</div>
+                                            <div class="radio-option" data-value="https://showradyo.live.showradyo.com.tr/showradyo.mp3" data-name="Show Radyo" data-artist="Show Radyo Grubu" style="padding: 10px 20px; color: #cbd5e1; cursor: pointer; transition: all 0.2s ease; font-size: 0.9rem;">Show Radyo (Pop)</div>
+                                            <div class="radio-option" data-value="https://radyod.live.radyod.com.tr/radyod.mp3" data-name="Radyo D" data-artist="Doğan Medya" style="padding: 10px 20px; color: #cbd5e1; cursor: pointer; transition: all 0.2s ease; font-size: 0.9rem;">Radyo D (Hit Pop)</div>
+                                            
+                                            <!-- Global Radyolar -->
+                                            <div class="select-group-title" style="padding: 12px 15px 4px; font-size: 0.8rem; font-weight: 700; color: #3b82f6; border-bottom: 1px solid rgba(255,255,255,0.05); text-transform: uppercase; letter-spacing: 0.5px; border-top: 1px solid rgba(255,255,255,0.05);">Global Radios</div>
+                                            <div class="radio-option" data-value="https://icecast.unitedradio.it/VirginRadio.mp3" data-name="Virgin Radio" data-artist="Rock - Italy" style="padding: 10px 20px; color: #cbd5e1; cursor: pointer; transition: all 0.2s ease; font-size: 0.9rem;">Virgin Radio (Rock)</div>
+                                            <div class="radio-option" data-value="https://stream.radioparadise.com/mp3-128" data-name="Radio Paradise" data-artist="Mellow Mix - USA" style="padding: 10px 20px; color: #cbd5e1; cursor: pointer; transition: all 0.2s ease; font-size: 0.9rem;">Radio Paradise (Alternative)</div>
+                                            <div class="radio-option" data-value="https://stream.ibizaglobalradio.com/public/ibizaglobalradio" data-name="Ibiza Global Radio" data-artist="Electronic - Spain" style="padding: 10px 20px; color: #cbd5e1; cursor: pointer; transition: all 0.2s ease; font-size: 0.9rem;">Ibiza Global Radio (Electronic)</div>
+                                            <div class="radio-option" data-value="https://somafm.com/groovesalad130.mp3" data-name="SomaFM Groove Salad" data-artist="Ambient - USA" style="padding: 10px 20px; color: #cbd5e1; cursor: pointer; transition: all 0.2s ease; font-size: 0.9rem;">SomaFM Groove Salad (Ambient)</div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="radio-live-badge" id="radio-live-indicator" style="display: none; align-items: center; justify-content: center; gap: 8px; margin: 15px 0; color: #ef4444; font-weight: 700; font-size: 0.9rem;">

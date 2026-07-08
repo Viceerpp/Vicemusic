@@ -115,6 +115,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const albumArt = document.querySelector('.album-art');
         const customTimeline = document.getElementById('custom-timeline');
         const ytTimelineMsg = document.getElementById('yt-timeline-msg');
+        const volumeSlider = document.getElementById('volume-slider');
+        const volumePercentage = document.getElementById('volume-percentage');
 
         // Extract YouTube Video ID from URL
         function getYouTubeId(url) {
@@ -179,14 +181,21 @@ document.addEventListener('DOMContentLoaded', () => {
         function togglePlay() {
             if (isYoutubeActive) {
                 isPlaying = !isPlaying;
+                const iframe = ytVideoContainer.querySelector('iframe');
                 if (isPlaying) {
                     playerMockup.classList.remove('paused');
                     playSvg.style.display = 'none';
                     pauseSvg.style.display = 'block';
+                    if (iframe && iframe.contentWindow) {
+                        iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                    }
                 } else {
                     playerMockup.classList.add('paused');
                     playSvg.style.display = 'block';
                     pauseSvg.style.display = 'none';
+                    if (iframe && iframe.contentWindow) {
+                        iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                    }
                 }
             } else {
                 if (isPlaying) {
@@ -266,7 +275,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 albumArt.style.display = 'none';
                 ytVideoContainer.style.display = 'block';
                 
-                ytVideoContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width: 100%; height: 100%; border-radius: 12px;"></iframe>`;
+                ytVideoContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width: 100%; height: 100%; border-radius: 12px;"></iframe>`;
+
+                // Set initial volume on load
+                const iframe = ytVideoContainer.querySelector('iframe');
+                if (iframe) {
+                    iframe.addEventListener('load', () => {
+                        const currentVol = volumeSlider ? volumeSlider.value : 80;
+                        setTimeout(() => {
+                            if (iframe && iframe.contentWindow) {
+                                iframe.contentWindow.postMessage(JSON.stringify({
+                                    event: 'command',
+                                    func: 'setVolume',
+                                    args: [currentVol]
+                                }), '*');
+                            }
+                        }, 500);
+                    });
+                }
 
                 customTimeline.style.display = 'none';
                 ytTimelineMsg.style.display = 'block';
@@ -329,6 +355,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 playYoutubeLink();
             }
         });
+
+        // Volume Control Listener
+        if (volumeSlider && volumePercentage) {
+            volumeSlider.addEventListener('input', (e) => {
+                const volVal = e.target.value;
+                volumePercentage.textContent = `${volVal}%`;
+                
+                // If YouTube is active, set the video volume via iframe API
+                if (isYoutubeActive) {
+                    const iframe = ytVideoContainer.querySelector('iframe');
+                    if (iframe && iframe.contentWindow) {
+                        iframe.contentWindow.postMessage(JSON.stringify({
+                            event: 'command',
+                            func: 'setVolume',
+                            args: [volVal]
+                        }), '*');
+                    }
+                }
+            });
+        }
 
         // Initialize mock first track state
         loadTrack(currentTrackIndex);
@@ -394,12 +440,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (counted) return;
         counted = true;
         
+        // Set static targets to match Beatra visual exactly as requested
+        const usersEl = document.getElementById('stat-users');
+        const serversEl = document.getElementById('stat-servers');
+        if (usersEl) usersEl.setAttribute('data-val', 480000);
+        if (serversEl) serversEl.setAttribute('data-val', 12500);
+        
         stats.forEach(stat => {
             const target = parseInt(stat.getAttribute('data-val'));
-            if (isNaN(target)) return; // Skip non-numeric values like '99.9%'
+            if (isNaN(target)) return;
             
             let count = 0;
-            const speed = 2000 / target; // complete in 2 seconds
             
             const counter = setInterval(() => {
                 count += Math.ceil(target / 100);
@@ -408,8 +459,33 @@ document.addEventListener('DOMContentLoaded', () => {
                     clearInterval(counter);
                 }
                 
-                // Format with thousand separator
-                stat.textContent = count.toLocaleString('tr-TR');
+                // Format according to card target representation to match Beatra exactly
+                if (stat.id === 'stat-users') {
+                    if (target >= 1000000) {
+                        const val = count / 1000000;
+                        const formatted = val % 1 === 0 ? val.toString() : val.toFixed(1);
+                        stat.textContent = `${formatted}M+`;
+                    } else if (target >= 1000) {
+                        const val = count / 1000;
+                        const formatted = val % 1 === 0 ? val.toString() : val.toFixed(1);
+                        stat.textContent = `${formatted}K+`;
+                    } else {
+                        stat.textContent = count.toLocaleString('tr-TR') + '+';
+                    }
+                } else if (stat.id === 'stat-servers') {
+                    if (target >= 1000) {
+                        const val = count / 1000;
+                        const formatted = val % 1 === 0 ? val.toString() : val.toFixed(1);
+                        stat.textContent = `${formatted}K+`;
+                    } else {
+                        stat.textContent = count.toLocaleString('tr-TR') + '+';
+                    }
+                } else if (stat.id === 'stat-uptime') {
+                    const isTr = document.body.classList.contains('lang-tr');
+                    stat.textContent = isTr ? `%${count}` : `${count}%`;
+                } else {
+                    stat.textContent = count.toLocaleString('tr-TR');
+                }
             }, 20);
         });
     }
@@ -550,21 +626,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const leaderboardPageSize = 10;
     let currentSortMetric = 'listeningTime';
 
-    // Use REAL data from guilds.js - plays and listenHours are actual usage stats
-    function getProcessedLeaderboardData(period) {
+    // Use REAL data from guilds.json / guilds.js - no artificial multipliers or hardcoded pinning
+    function getProcessedLeaderboardData() {
         let rawData = [...(window.activeCommunities || [])];
         const isTr = document.body.classList.contains('lang-tr');
 
-        // Period multiplier - shows proportional usage per time window
-        const periodMultiplier = period === '7' ? 1 : (period === '30' ? 4.3 : 13);
-
         return rawData.map((item) => {
-            // Use real values from guilds.js, scaled by period
-            const basePlays = item.plays || 0;
-            const baseListenHours = item.listenHours || 0;
-
-            const plays = Math.round(basePlays * periodMultiplier);
-            const listenHours = Math.round(baseListenHours * periodMultiplier);
+            const plays = item.plays || 0;
+            const listenHours = item.listenHours || 0;
 
             // Format listen hours into days or hours
             let listeningTimeText = '';
@@ -581,29 +650,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 listeningTimeText: listeningTimeText,
                 listenHours: listenHours
             };
-        
         }).sort((a, b) => {
-            // Force user's main server "𝙑𝙞𝙘e" to be 1st place always
-            const nameA = a.name;
-            const nameB = b.name;
-            const isViceA = nameA === '\uD835\uDE51\uD835\uDE5E\uD835\uDE58\uD835\uDE5A' || nameA === '𝙑𝙞𝙘𝙚' || nameA.toLowerCase() === 'vice';
-            const isViceB = nameB === '\uD835\uDE51\uD835\uDE5E\uD835\uDE58\uD835\uDE5A' || nameB === '𝙑𝙞𝙘𝙚' || nameB.toLowerCase() === 'vice';
-            
-            if (isViceA) return -1;
-            if (isViceB) return 1;
-            
             if (currentSortMetric === 'plays') {
                 return b.plays - a.plays;
             } else if (currentSortMetric === 'members') {
                 return b.members - a.members;
             } else {
-                return b.listenHours - a.listenHours; // Sort by listening time / bot usage
+                return b.listenHours - a.listenHours; // Sort by listening time
             }
         });
     }
 
     function renderLeaderboard() {
-        const sortedData = getProcessedLeaderboardData(currentPeriod);
+        const sortedData = getProcessedLeaderboardData();
         
         // Filter by search query
         const filteredData = sortedData.filter(item => 
@@ -861,34 +920,114 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Tab buttons period toggle bindings
-    leaderboardTabBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            leaderboardTabBtns.forEach(b => b.classList.remove('active'));
-            const targetBtn = e.target.closest('.leaderboard-tab-btn');
-            if (targetBtn) {
-                targetBtn.classList.add('active');
-                currentPeriod = targetBtn.getAttribute('data-period');
+    // Custom Dropdown Menu handler
+    const customSelect = document.getElementById('leaderboard-sort-custom');
+    if (customSelect) {
+        const trigger = customSelect.querySelector('.custom-select-trigger');
+        const options = customSelect.querySelectorAll('.custom-option');
+        
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            customSelect.classList.toggle('open');
+        });
+        
+        options.forEach(opt => {
+            opt.addEventListener('click', (e) => {
+                const val = opt.getAttribute('data-value');
+                options.forEach(o => o.classList.remove('selected'));
+                opt.classList.add('selected');
+                
+                // Update trigger text
+                const activeTr = opt.querySelector('.tr-text').innerHTML;
+                const activeEn = opt.querySelector('.en-text').innerHTML;
+                trigger.querySelector('.tr-text').innerHTML = activeTr;
+                trigger.querySelector('.en-text').innerHTML = activeEn;
+                
+                currentSortMetric = val;
                 leaderboardCurrentPage = 1; // Reset to page 1
                 renderLeaderboard();
-            }
+                
+                customSelect.classList.remove('open');
+            });
         });
-    });
-    // Sort dropdown change listener
-    const sortSelect = document.getElementById('leaderboard-sort');
-    if (sortSelect) {
-        sortSelect.addEventListener('change', (e) => {
-            currentSortMetric = e.target.value;
-            leaderboardCurrentPage = 1; // Reset to page 1
-            renderLeaderboard();
+        
+        document.addEventListener('click', () => {
+            customSelect.classList.remove('open');
         });
     }
 
-    // Run initial loads depending on page
-    if (isLeaderboardPage) {
-        renderLeaderboard();
-    } else {
-        loadActiveCommunities();
+    // Dynamic guilds.json load with local fallback to guilds.js
+    async function initLeaderboard() {
+        if (isLeaderboardPage || document.getElementById('communities-container')) {
+            try {
+                const response = await fetch('guilds.json');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (Array.isArray(data) && data.length > 0) {
+                        window.activeCommunities = data;
+                    }
+                }
+            } catch (e) {
+                console.warn("Could not fetch guilds.json (normal on local file:///), using guilds.js fallback data:", e);
+            }
+        }
+        
+        // Initial loads
+        if (isLeaderboardPage) {
+            renderLeaderboard();
+        } else {
+            loadActiveCommunities();
+        }
+    }
+
+    // Real-time polling function for guilds.json
+    function startRealtimePolling() {
+        if (isLeaderboardPage || document.getElementById('communities-container')) {
+            setInterval(async () => {
+                try {
+                    // Fetch with cache-busting query parameter to avoid HTTP caching
+                    const response = await fetch('guilds.json?t=' + Date.now());
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (Array.isArray(data) && data.length > 0) {
+                            // Only update DOM and trigger recalculations if the data has actually changed!
+                            const newJson = JSON.stringify(data);
+                            const oldJson = JSON.stringify(window.activeCommunities || []);
+                            
+                            if (newJson !== oldJson) {
+                                window.activeCommunities = data;
+                                
+                                if (isLeaderboardPage) {
+                                    renderLeaderboard();
+                                } else {
+                                    loadActiveCommunities();
+                                }
+                            }
+                        }
+                    }
+                } catch (e) {
+                    // Fail silently on local CORS block (file:///)
+                }
+            }, 3000); // Poll every 3 seconds for extremely fast and responsive real-time updates!
+        }
+    }
+
+    // Run dynamic initializer and start polling
+    initLeaderboard();
+    startRealtimePolling();
+
+    // Fade in/out dashboard preview badge on scroll
+    const scrollBadge = document.querySelector('.scroll-fade-badge');
+    if (scrollBadge) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 80) { // user scrolled down more than 80px
+                scrollBadge.style.opacity = '1';
+                scrollBadge.style.transform = 'translateY(0)';
+            } else { // user scrolled back to top
+                scrollBadge.style.opacity = '0';
+                scrollBadge.style.transform = 'translateY(10px)';
+            }
+        });
     }
 
     // Listen for language toggles to update member/active badges

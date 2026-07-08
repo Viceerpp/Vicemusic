@@ -463,6 +463,117 @@
             padding: 0 6px;
             font-size: 0.95rem;
         }
+
+        /* Custom Select Dropdown Styling */
+        .custom-select-wrapper {
+            position: relative;
+            user-select: none;
+            width: 280px;
+            z-index: 10;
+        }
+
+        .custom-select {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .custom-select-trigger {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #ffffff;
+            background: #111218;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .custom-select-trigger:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: #15161e;
+        }
+
+        .custom-select.open .custom-select-trigger {
+            border-color: #2563eb;
+            box-shadow: 0 0 10px rgba(37, 99, 235, 0.15);
+        }
+
+        .custom-select-trigger .arrow {
+            width: 8px;
+            height: 8px;
+            border-left: 2px solid #94a3b8;
+            border-bottom: 2px solid #94a3b8;
+            transform: rotate(-45deg) translateY(-2px);
+            transition: all 0.2s ease;
+            margin-right: 4px;
+        }
+
+        .custom-select.open .arrow {
+            transform: rotate(135deg) translateY(2px);
+            border-color: #ffffff;
+        }
+
+        .custom-options {
+            position: absolute;
+            display: block;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #111218;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            margin-top: 6px;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            z-index: 100;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .custom-select.open .custom-options {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: all;
+        }
+
+        .custom-option {
+            position: relative;
+            display: block;
+            padding: 10px 16px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .custom-option:first-child {
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .custom-option:last-child {
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        .custom-option:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .custom-option.selected {
+            color: #ffffff;
+            background: #2563eb;
+        }
     </style>
 </head>
 <body>
@@ -473,10 +584,10 @@
     <header class="navbar-header" id="navbar">
         <div class="container navbar-container">
             <a href="index.html" class="logo">
-                <img src="vice_logo.jpg" alt="Vice Logo" class="logo-icon" style="border-radius: 8px; object-fit: cover;">
+                <img src="vice_logo.jpg" alt="Vice Logo" class="logo-icon">
                 <span class="logo-text">
-                    <span class="tr-text">Vice Müzik</span>
-                    <span class="en-text">Vice Music</span>
+                    <span class="tr-text">Vice</span>
+                    <span class="en-text">Vice</span>
                 </span>
             </a>
 
@@ -495,18 +606,6 @@
                         </a>
                     </li>
                     <li>
-                        <a href="index.html#premium" class="nav-link">
-                            <span class="tr-text">Premium</span>
-                            <span class="en-text">Premium</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="index.html#about" class="nav-link">
-                            <span class="tr-text">Hakkımızda</span>
-                            <span class="en-text">About Us</span>
-                        </a>
-                    </li>
-                    <li>
                         <a href="index.html#commands" class="nav-link">
                             <span class="tr-text">Komutlar</span>
                             <span class="en-text">Commands</span>
@@ -518,15 +617,33 @@
                             <span class="en-text">FAQ</span>
                         </a>
                     </li>
-                    <li class="dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" id="dropdown-more">
+                    <li>
+                        <a href="index.html#about" class="nav-link">
+                            <span class="tr-text">Hakkımızda</span>
+                            <span class="en-text">About Us</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="servers.html" class="nav-link" style="display: inline-flex; align-items: center; gap: 6px;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;">
+                                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+                                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+                                <path d="M4 22h16" />
+                                <path d="M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34" />
+                                <path d="M12 2a7 7 0 0 0-7 7c0 2.65 1.5 4.5 3 5h8c1.5-.5 3-2.35 3-5a7 7 0 0 0-7-7z" />
+                            </svg>
                             <span class="tr-text">Sıralamalar</span>
                             <span class="en-text">Leaderboards</span>
-                            <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a href="servers.html"><span class="tr-text">Sunucu Sıralaması</span><span class="en-text">Server Rank</span></a></li>
-                        </ul>
+                    </li>
+                    <li>
+                        <a href="https://discord.gg/PB7BZUZFbg" target="_blank" class="nav-link" style="display: inline-flex; align-items: center; gap: 6px;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;">
+                                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+                            </svg>
+                            <span class="tr-text">Destek</span>
+                            <span class="en-text">Support</span>
+                        </a>
                     </li>
 
                     <!-- Language Selector Toggle -->
@@ -562,7 +679,7 @@
 
                 <div class="leaderboard-page-container">
                     
-                    <!-- Header with Title and Tabs -->
+                    <!-- Header with Title -->
                     <div class="leaderboard-header-row">
                         <div>
                             <h1 class="leaderboard-title">
@@ -570,23 +687,9 @@
                                 <span class="en-text">Top <span class="blue-text">Servers</span></span>
                             </h1>
                             <p class="leaderboard-subtitle">
-                                <span class="tr-text">Vice kullanan en aktif toplulukları keşfedin — <span style="color: #64748b;">1.999 en iyi sunucu</span></span>
-                                <span class="en-text">Discover the most active communities using Vice — <span style="color: #64748b;">1,999 top servers</span></span>
+                                <span class="tr-text">Vice kullanan en aktif toplulukları keşfedin</span>
+                                <span class="en-text">Discover the most active communities using Vice</span>
                             </p>
-                        </div>
-                        <div class="leaderboard-tabs-wrapper">
-                            <button class="leaderboard-tab-btn active" data-period="7">
-                                <span class="tr-text">7 Gün</span>
-                                <span class="en-text">7 Days</span>
-                            </button>
-                            <button class="leaderboard-tab-btn" data-period="30">
-                                <span class="tr-text">30 Gün</span>
-                                <span class="en-text">30 Days</span>
-                            </button>
-                            <button class="leaderboard-tab-btn" data-period="all">
-                                <span class="tr-text">90 Gün</span>
-                                <span class="en-text">90 Days</span>
-                            </button>
                         </div>
                     </div>
 
@@ -595,11 +698,29 @@
                         <div class="leaderboard-search-wrapper">
                             <input type="text" id="leaderboard-search" placeholder="Sunucularda ara..." class="leaderboard-search-input">
                         </div>
-                        <select class="leaderboard-sort-dropdown" id="leaderboard-sort">
-                            <option value="listeningTime">Dinleme Süresi / Listening Time</option>
-                            <option value="plays">Çalma Sayısı / Plays</option>
-                            <option value="members">Üye Sayısı / Member Count</option>
-                        </select>
+                        <div class="custom-select-wrapper">
+                            <div class="custom-select" id="leaderboard-sort-custom">
+                                <div class="custom-select-trigger">
+                                    <span class="tr-text">Dinleme Süresi / Listening Time</span>
+                                    <span class="en-text">Dinleme Süresi / Listening Time</span>
+                                    <div class="arrow"></div>
+                                </div>
+                                <div class="custom-options">
+                                    <div class="custom-option selected" data-value="listeningTime">
+                                        <span class="tr-text">Dinleme Süresi / Listening Time</span>
+                                        <span class="en-text">Dinleme Süresi / Listening Time</span>
+                                    </div>
+                                    <div class="custom-option" data-value="plays">
+                                        <span class="tr-text">Çalma Sayısı / Plays</span>
+                                        <span class="en-text">Çalma Sayısı / Plays</span>
+                                    </div>
+                                    <div class="custom-option" data-value="members">
+                                        <span class="tr-text">Üye Sayısı / Member Count</span>
+                                        <span class="en-text">Üye Sayısı / Member Count</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Top 3 Podium -->
@@ -649,8 +770,8 @@
                 <a href="index.html" class="logo footer-logo">
                     <img src="vice_logo.jpg" alt="Vice Logo" class="logo-icon" style="border-radius: 8px; width: 40px; height: 40px; object-fit: cover;">
                     <span class="logo-text">
-                        <span class="tr-text">Vice Müzik</span>
-                        <span class="en-text">Vice Music</span>
+                        <span class="tr-text">Vice</span>
+                        <span class="en-text">Vice</span>
                     </span>
                 </a>
                 <p class="footer-desc">
@@ -659,13 +780,12 @@
                 </p>
             </div>
 
-            <div class="footer-links-group">
                 <div class="footer-links-col">
                     <h4>Vice</h4>
                     <ul>
                         <li><a href="index.html#features"><span class="tr-text">Özellikler</span><span class="en-text">Features</span></a></li>
                         <li><a href="index.html#commands"><span class="tr-text">Komutlar</span><span class="en-text">Commands</span></a></li>
-                        <li><a href="index.html#premium"><span class="tr-text">Premium</span><span class="en-text">Premium</span></a></li>
+                        <li><a href="servers.html"><span class="tr-text">Sıralamalar</span><span class="en-text">Leaderboards</span></a></li>
                     </ul>
                 </div>
                 <div class="footer-links-col">
@@ -673,7 +793,7 @@
                     <span class="en-text"><h4>Support</h4></span>
                     <ul>
                         <li><a href="index.html#faq"><span class="tr-text">SSS</span><span class="en-text">FAQ</span></a></li>
-                        <li><a href="#"><span class="tr-text">Destek Sunucusu</span><span class="en-text">Support Server</span></a></li>
+                        <li><a href="https://discord.gg/PB7BZUZFbg" target="_blank"><span class="tr-text">Destek Sunucusu</span><span class="en-text">Support Server</span></a></li>
                         <li><a href="#"><span class="tr-text">Bize Ulaşın</span><span class="en-text">Contact Us</span></a></li>
                     </ul>
                 </div>
@@ -686,16 +806,21 @@
                     </ul>
                 </div>
             </div>
-        </div>
         <div class="footer-bottom">
-            <div class="container footer-bottom-content">
-                <p>&copy; 2026 Vice Bot. 
-                    <span class="tr-text">Tüm hakları saklıdır.</span>
-                    <span class="en-text">All rights reserved.</span>
-                </p>
-                <p class="disclaimer">
-                    <span class="tr-text">Bu web sitesi ve bot Discord Inc. ile resmi olarak ortak değildir.</span>
-                    <span class="en-text">This website and bot are not officially affiliated with Discord Inc.</span>
+            <div class="container footer-bottom-content" style="flex-direction: column; gap: 8px; text-align: center;">
+                <div style="display: flex; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 10px;">
+                    <p>&copy; 2026 Vice Bot. 
+                        <span class="tr-text">Tüm hakları saklıdır.</span>
+                        <span class="en-text">All rights reserved.</span>
+                    </p>
+                    <p class="disclaimer">
+                        <span class="tr-text">Bu web sitesi ve bot Discord Inc. ile resmi olarak ortak değildir.</span>
+                        <span class="en-text">This website and bot are not officially affiliated with Discord Inc.</span>
+                    </p>
+                </div>
+                <p class="bug-report" style="color: #64748b; font-size: 0.85rem; margin-top: 5px;">
+                    <span class="tr-text">Bug ve hata bildirimleri için Discord adresimizden ticket açabilirsiniz.</span>
+                    <span class="en-text">For bug and error reports, you can open a ticket on our Discord server.</span>
                 </p>
             </div>
         </div>

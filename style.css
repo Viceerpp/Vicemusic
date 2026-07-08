@@ -1023,9 +1023,6 @@ footer,
     border-left-color: var(--color-accent);
     padding-left: 24px;
 }
-    border-left-color: var(--color-accent) !important;
-    padding-left: 24px !important; /* Smooth indentation on hover */
-}
 
 .player-controls {
     display: flex;

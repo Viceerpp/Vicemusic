@@ -902,22 +902,108 @@ footer,
 }
 
 /* Custom Radio Selector Dropdown Styles */
+#radio-selector-custom {
+    position: relative;
+    width: 100%;
+}
+
+#radio-selector-custom .select-trigger {
+    background: #111115 !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 8px !important;
+    padding: 12px 18px !important;
+    color: #ffffff !important;
+    font-size: 1rem !important;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 #radio-selector-custom .select-trigger:hover {
-    border-color: rgba(37, 99, 235, 0.5);
-    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: var(--color-accent) !important;
+    background: #16161f !important;
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15);
 }
 
 #radio-selector-custom.open .chevron {
     transform: rotate(180deg);
+    color: var(--color-accent);
 }
 
 #radio-selector-custom.open .select-options {
     display: block !important;
+    animation: fadeInDropdown 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeInDropdown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#radio-selector-custom .select-options {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 6px);
+    background: #0d0d12 !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 8px !important;
+    z-index: 1000;
+    max-height: 260px;
+    overflow-y: auto;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7);
+    overscroll-behavior: contain; /* Prevents page scroll when scrolling dropdown */
+}
+
+/* Scrollbar for select options */
+#radio-selector-custom .select-options::-webkit-scrollbar {
+    width: 6px;
+}
+#radio-selector-custom .select-options::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+}
+#radio-selector-custom .select-options::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+}
+#radio-selector-custom .select-options::-webkit-scrollbar-thumb:hover {
+    background: var(--color-accent);
+}
+
+#radio-selector-custom .select-group-title {
+    padding: 10px 18px 6px !important;
+    font-size: 0.8rem !important;
+    font-weight: 800 !important;
+    color: var(--color-accent) !important;
+    letter-spacing: 1px !important;
+    text-transform: uppercase;
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+#radio-selector-custom .radio-option {
+    padding: 12px 20px !important;
+    color: rgba(255, 255, 255, 0.9) !important; /* High contrast white */
+    font-size: 0.95rem !important;
+    font-weight: 500 !important;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
 }
 
 #radio-selector-custom .radio-option:hover {
-    background: rgba(37, 99, 235, 0.15) !important;
+    background: rgba(59, 130, 246, 0.12) !important;
     color: #ffffff !important;
+    border-left-color: var(--color-accent) !important;
+    padding-left: 24px !important; /* Smooth indentation on hover */
 }
 
 .player-controls {

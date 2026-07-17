@@ -1,5 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
     /* ==========================================================================
+       0. LIVE DISCORD BOT DATA CONFIGURATION
+       If you have a backend API/Server running for your Discord Bot, put its URL here
+       (e.g., 'https://my-discord-bot.com/api/guilds' or 'http://localhost:3000/api/guilds')
+       Leave it as an empty string or null to fetch from the local 'guilds.json' file.
+       ========================================================================== */
+    const LIVE_BOT_API_URL = '';
+
+    /* ==========================================================================
        1. STICKY NAVBAR & MOBILE MENU
        ========================================================================== */
     const navbar = document.getElementById('navbar');
@@ -1136,7 +1144,9 @@ document.addEventListener('DOMContentLoaded', () => {
     async function initLeaderboard() {
         if (isLeaderboardPage || document.getElementById('communities-container')) {
             try {
-                const response = await fetch('guilds.json');
+                // Try fetching from the live bot API if configured
+                const fetchUrl = LIVE_BOT_API_URL ? LIVE_BOT_API_URL : 'guilds.json';
+                const response = await fetch(fetchUrl);
                 if (response.ok) {
                     const data = await response.json();
                     if (Array.isArray(data) && data.length > 0) {
@@ -1144,7 +1154,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             } catch (e) {
-                console.warn("Could not fetch guilds.json (normal on local file:///), using guilds.js fallback data:", e);
+                console.warn("Could not fetch server data, using guilds.js fallback:", e);
             }
         }
         
@@ -1161,8 +1171,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isLeaderboardPage || document.getElementById('communities-container')) {
             setInterval(async () => {
                 try {
-                    // Fetch with cache-busting query parameter to avoid HTTP caching
-                    const response = await fetch('guilds.json?t=' + Date.now());
+                    // Try fetching from the live bot API if configured, adding cache buster
+                    const baseUri = LIVE_BOT_API_URL ? LIVE_BOT_API_URL : 'guilds.json';
+                    const separator = baseUri.includes('?') ? '&' : '?';
+                    const fetchUrl = baseUri + separator + 't=' + Date.now();
+                    
+                    const response = await fetch(fetchUrl);
                     if (response.ok) {
                         const data = await response.json();
                         if (Array.isArray(data) && data.length > 0) {
@@ -1182,7 +1196,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     }
                 } catch (e) {
-                    // Fail silently on local CORS block (file:///)
+                    // Fail silently on local CORS block (file:///) or API disconnect
                 }
             }, 3000); // Poll every 3 seconds for extremely fast and responsive real-time updates!
         }
